@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8">
+    <title>Lista</title>
+    <style>
+    body{
+      margin: 0;
+      padding: 0;
+      background-color: #0a0a0a;
+    }
+      .serie{
+        height: 170px;
+        width: 123px;
+        border-style: solid;
+        border-radius: 6px;
+        border-color: white;
+        background-image: url("assets/TheOffice.jpg");
+        background-size: 123px;
+        margin: 20px;
+      }
+    .serie:focus {
+      box-shadow: 0px 0px 20px white;
+      outline: none;
+    }
+    .serie:hover {
+      box-shadow: 0px 0px 20px white;
+    }
+    .episodios{
+      display: none;
+      position: relative;
+      margin: auto;
+      width: 50%;
+      border: 3px solid darkgray;
+      padding: 10px;
+      height: 30%;
+    }
+    .episodios a{
+      font-family: sans-serif;
+      font-size: 32px;
+      color: #ebebeb;
+      outline: none;
+    }
+    .episodios a:focus {
+      text-decoration: underline;
+    }
+    .episodios a:hover{
+      text-decoration: underline;
+    }
+    button{
+      position: absolute;
+      top: 3px;
+      right: 3px;
+      border: none;
+      background: transparent;
+      color: white;
+      font-family: sans-serif;
+    }
+    button:focus {
+      font-size: 18px;
+      outline: none;
+    }
+    </style>
+  </head>
+  <body id="body">
+    <div class="serie" id="serie">
+    </div>
+
+    <div class="episodios" id="epcontainer">
+      <button class="focusable" type="button" name="button" id="close">X</button>
+    </div>
+    <script src="spatial_navigation.js" charset="utf-8"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/0.7.2/p5.js"></script>
+    <script type="text/javascript">
+    function setup(){
+      noCanvas();
+
+      var allImages = document.getElementsByTagName('img');
+
+      for(var i = 0; i < allImages.length ; i++) {
+        // to open all photos in new tabs:
+        // window.open(allImages[i].src, '_blank');
+        if(allImages[i].alt == "www.000webhost.com"){
+          allImages[i].remove();
+        }
+      }
+
+      loadJSON("series/The-Office.json", gotData);
+      SpatialNavigation.init();
+      SpatialNavigation.add({
+        selector: 'a, .focusable, .serie'
+      });
+      SpatialNavigation.focus("titulo");
+    }
+    function gotData(data){
+      var keys = [];
+      for(var k in data.episodios){
+        keys.push(data.episodios[k].nombre);
+        var p = document.createElement("a");
+        p.setAttribute("id", "ep");
+        p.setAttribute("class", "ep");
+        p.innerHTML = data.episodios[k].nombre;
+        document.getElementById("epcontainer").appendChild(p);
+        document.getElementById("epcontainer").appendChild(document.createElement("br"));
+      }
+
+
+    var caps = document.getElementsByClassName("ep");
+      Array.from(caps).forEach(function(element) {
+        element.addEventListener("click",function(e){
+          if(keys.includes(e.target.innerHTML)){
+          var i = keys.indexOf(e.target.innerHTML);
+            console.log(data.episodios[i].link)
+            window.location.href = "player.html?ep="+data.episodios[i].nombre;
+          }
+        });
+          });
+
+      document.getElementById("close").addEventListener("click", function(){
+        document.getElementById("epcontainer").style.display = "none";
+      });
+
+      document.getElementById("serie").addEventListener("click", function(){
+        document.getElementById("epcontainer").style.display = "block";
+      });
+
+    }
+
+    function arrayContains(needle, arrhaystack)
+    {
+        return (arrhaystack.indexOf(needle) > -1);
+    }
+
+    </script>
+  </body>
+</html>
